@@ -1,0 +1,70 @@
+
+---
+
+## ⚙️ 1. 데이터 수집 (ETL)
+- **AdventureWorks-Sales** 원본 데이터를 SQLite DB(`adventure_sales.db`)에 적재
+- SQLAlchemy를 이용하여 테이블 생성 및 데이터 저장  
+- 데이터셋: `Sales`, `Customers`, `Products`, `Resellers`, `Regions` 등  
+
+📄 파일: `AdventureSales_01_ETL_datamining.ipynb`
+
+---
+
+## 🧹 2. 데이터 전처리
+- 결측치(NaN) 처리  
+- 날짜형 변환 및 파생 변수 생성 (예: 구매 간격, 누적 구매액 등)  
+- 고객 및 제품별 인덱싱
+
+📄 파일: `AdventureSales_02_Preproessing.ipynb`
+
+---
+
+## 📊 3. EDA (탐색적 데이터 분석)
+- 매출, 지역별 판매 현황, 고객 구매 패턴 시각화  
+- 고객별 총 매출, 평균 구매 간격 등 통계 분석  
+- `matplotlib`, `seaborn`을 활용한 그래프 시각화
+
+📄 파일: `AdventureSales_03_Basic_EDA.ipynb`
+
+---
+
+## 🧩 4. 고객 세분화 (RFM 분석)
+| 요소 | 정의 | 설명 |
+|------|------|------|
+| **Recency (R)** | 마지막 구매 이후 경과 일수 | 최근 구매한 고객일수록 높은 가치 |
+| **Frequency (F)** | 구매 빈도 | 자주 구매한 고객 |
+| **Monetary (M)** | 총 구매 금액 | 많이 지출한 고객 |
+
+- K-Means 또는 Quantile 기반 Scoring
+- 고객을 **VIP / 이탈위험 / 신규 / 일반** 그룹으로 분류
+
+📄 관련 코드: `adventure_03_eda.py`
+
+---
+
+## 🤖 5. 예측 모델
+| 예측 과제 | 설명 | 모델 유형 | 사용 테이블 |
+|------------|--------|-------------|--------------|
+| 🛍 다음 구매 시기 예측 | 고객의 다음 구매일까지의 일수 | 회귀 | Sales, Customers |
+| 📦 구매 여부 예측 | 특정 기간 내 구매 여부 (0/1) | 분류 | Sales, Customers |
+| 💸 CLV 예측 | 고객 생애가치 (총 매출액) | 회귀 | Sales |
+| 🛒 상품 추천 | 고객별 다음에 구매할 확률이 높은 제품 | 분류 / 추천 | Sales, Products |
+| 🔄 이탈 고객 예측 | 이탈 가능성이 높은 고객 분류 | 분류 | Sales, Customers |
+| 💼 리셀러 성과 예측 | 리셀러 매출 및 등급 예측 | 회귀 / 분류 | Resellers, Sales |
+
+📄 관련 코드: `adventure_04_model_api.py`
+
+---
+
+## 🌐 6. FastAPI 기반 서비스
+- `FastAPI`로 RESTful API 서버 구현  
+- 학습된 모델을 불러와 예측 결과를 반환  
+- SQLite 연결 → 모델 예측 → JSON 응답까지 전체 파이프라인 제공
+
+### 🚀 실행 방법
+```bash
+# FastAPI 실행
+uvicorn fastapi_adventureworks:app --reload
+
+# 실행 후 브라우저에서 접속
+http://127.0.0.1:8000/docs
